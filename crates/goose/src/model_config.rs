@@ -134,7 +134,7 @@ fn base_model_config_from_user_config(
         toolshim_model: get_goose_toolshim_model(config)?,
         request_params: None,
         reasoning: None,
-        supports_vision: None,
+        supports_vision: get_goose_supports_vision(config)?,
         request_headers: None,
     };
     if provider_name != goose_providers::azure_foundry::AZURE_FOUNDRY_PROVIDER_NAME {
@@ -204,6 +204,16 @@ fn get_goose_toolshim_model(config: &Config) -> Result<Option<String>> {
             "Invalid value for 'GOOSE_TOOLSHIM_OLLAMA_MODEL': '{value}' - cannot be empty if set"
         )),
         Ok(value) => Ok(Some(value)),
+        Err(ConfigError::NotFound(_)) => Ok(None),
+        Err(e) => Err(e.into()),
+    }
+}
+
+/// Takes precedence over canonical vision detection, so models the registry does
+/// not know (e.g. on custom OpenAI-compatible endpoints) can accept images.
+fn get_goose_supports_vision(config: &Config) -> Result<Option<bool>> {
+    match config.get_param::<serde_yaml::Value>("GOOSE_SUPPORTS_VISION") {
+        Ok(value) => parse_yaml_bool_config("GOOSE_SUPPORTS_VISION", value).map(Some),
         Err(ConfigError::NotFound(_)) => Ok(None),
         Err(e) => Err(e.into()),
     }
@@ -358,5 +368,21 @@ mod canonical_vision_tests {
         let model = apply_canonical_limits("my-custom-provider", ModelConfig::new("some-model"));
 
         assert_eq!(model.supports_vision, None);
+    }
+
+    #[test]
+    fn env_var_enables_vision_for_unknown_model() {
+        let _guard = env_lock::lock_env([("GOOSE_SUPPORTS_VISION", Some("true"))]);
+        let model = model_config_from_user_config("my-custom-provider", "some-model").unwrap();
+
+        assert_eq!(model.supports_vision, Some(true));
+    }
+
+    #[test]
+    fn env_var_overrides_canonical_vision_support() {
+        let _guard = env_lock::lock_env([("GOOSE_SUPPORTS_VISION", Some("false"))]);
+        let model = model_config_from_user_config("alibaba-token-plan", "qwen3.8-flash").unwrap();
+
+        assert_eq!(model.supports_vision, Some(false));
     }
 }
