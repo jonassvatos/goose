@@ -170,7 +170,6 @@ fn replay_conversation_to_client(
                     let fields = tool_call_update_fields_from_response(
                         tool_response,
                         replay_tool_requests.get(&tool_response.id),
-                        true,
                     );
                     let meta = tool_response_meta(tool_response).unwrap_or_default();
 
@@ -319,23 +318,21 @@ impl GooseAcpAgent {
                     stream,
                 )
                 .await;
-            if result.is_ok() {
-                if let Err(error) = server
-                    .send_session_usage_updates(
-                        &task_cx,
-                        &task_acp_session_id,
-                        &task_session_id,
-                        &task_agent,
-                        &mut None,
-                    )
-                    .await
-                {
-                    warn!(
-                        session_id = task_session_id,
-                        ?error,
-                        "Failed to update usage after resumed ACP turn"
-                    );
-                }
+            if let Err(error) = server
+                .send_session_usage_updates(
+                    &task_cx,
+                    &task_acp_session_id,
+                    &task_session_id,
+                    &task_agent,
+                    &mut None,
+                )
+                .await
+            {
+                warn!(
+                    session_id = task_session_id,
+                    ?error,
+                    "Failed to update usage after resumed ACP turn"
+                );
             }
             server
                 .clear_active_run(&task_session_id, &task_run_id)

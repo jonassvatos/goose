@@ -1091,6 +1091,12 @@
   "extensionInstallModal.ok": {
     "defaultMessage": "OK"
   },
+  "extensionInstallModal.policyErrorMessage": {
+    "defaultMessage": "The extension allowlist policy could not be retrieved. Extension installation is blocked until the policy is available. Contact your administrator to check the GOOSE_ALLOWLIST configuration."
+  },
+  "extensionInstallModal.policyErrorTitle": {
+    "defaultMessage": "Extension Policy Unavailable"
+  },
   "extensionInstallModal.trustedMessage": {
     "defaultMessage": "Voulez-vous vraiment installer l'extension {name} ? Commande : {command}"
   },
@@ -4681,6 +4687,27 @@
   },
   "settings.agentLoop.operations.auto.placeholder": {
     "defaultMessage": "Automatique"
+  },
+  "settings.agentLoop.operations.autoEffort.apiKey.configured": {
+    "defaultMessage": "Configurée"
+  },
+  "settings.agentLoop.operations.autoEffort.apiKey.label": {
+    "defaultMessage": "Clé API TypeSafe"
+  },
+  "settings.agentLoop.operations.autoEffort.apiKey.placeholder": {
+    "defaultMessage": "Saisissez la clé API"
+  },
+  "settings.agentLoop.operations.autoEffort.apiKey.remove": {
+    "defaultMessage": "Supprimer la clé"
+  },
+  "settings.agentLoop.operations.autoEffort.apiKey.save": {
+    "defaultMessage": "Enregistrer la clé"
+  },
+  "settings.agentLoop.operations.autoEffort.description": {
+    "defaultMessage": "Utilise Jev pour choisir l’effort de raisonnement de chaque requête. Le texte est envoyé à TypeSafe AI ; les commandes de compétences et de recettes incluent leurs instructions locales développées."
+  },
+  "settings.agentLoop.operations.autoEffort.title": {
+    "defaultMessage": "Effort de raisonnement automatique"
   },
   "settings.agentLoop.operations.blockLimit.label": {
     "defaultMessage": "Limite de blocage"
